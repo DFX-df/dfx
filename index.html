@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#171717">
+  <title>顶峰学习小课堂</title>
+  <style>
+    :root {
+      --site-primary: #171717;
+      --site-on-primary: #f8f4e9;
+      --site-secondary: #b58a45;
+      --site-on-secondary: #17130c;
+      --site-background: #f3f0e9;
+      --site-on-background: #24211c;
+      --site-font-body: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      --site-font-heading: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      --site-heading-scale: 1;
+      --site-spacing-scale: 1;
+      --site-radius-scale: 1;
+      --site-decoration-opacity: 1;
+      --surface: light-dark(#ffffff, #222222);
+      --surface-soft: light-dark(#f8f6f1, #292929);
+      --text: light-dark(#24211c, #f1eee7);
+      --muted: light-dark(#777168, #b4ada1);
+      --line: light-dark(#e6dfd2, #41403c);
+      --gold: var(--site-secondary);
+      --shadow: 0 14px 36px rgba(27, 22, 13, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    html { color-scheme: light dark; }
+    body {
+      margin: 0;
+      background: var(--site-background);
+      color: var(--text);
+      font-family: var(--site-font-body);
+      line-height: 1.65;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    #app {
+      min-height: 100vh;
+      width: 100%;
+      border-radius: 0;
+      background-color: var(--site-background);
+      color: var(--site-on-background);
+      overflow: hidden;
+    }
+    .topbar {
+      background: var(--site-primary);
+      color: var(--site-on-primary);
+      border-bottom: 1px solid rgba(181, 138, 69, .35);
+    }
+    .topbar-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: calc(18px * var(--site-spacing-scale)) 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 13px; min-width: 0; }
+    .brand-mark {
+      width: 42px; height: 42px; flex: 0 0 auto;
+      border: 1px solid var(--site-secondary);
+      color: var(--site-secondary);
+      display: grid; place-items: center;
+      border-radius: calc(10px * var(--site-radius-scale));
+      font-family: var(--site-font-heading); font-weight: 800; letter-spacing: 1px;
+    }
+    .brand-name { font-size: calc(19px * var(--site-heading-scale)); font-weight: 750; letter-spacing: 1px; }
+    .brand-sub { color: #c7bda9; font-size: 11px; letter-spacing: 2px; }
+    .top-note { color: #d7cbb5; font-size: 12px; white-space: nowrap; }
+    .hero {
+      background: var(--site-primary);
+      color: var(--site-on-primary);
+      position: relative;
+      isolation: isolate;
+    }
+    .hero::after {
+      content: ""; position: absolute; inset: 0; z-index: -1;
+      opacity: var(--site-decoration-opacity);
+      background: radial-gradient(ellipse at 82% 25%, rgba(181,138,69,.22), transparent 42%),
+                  linear-gradient(115deg, transparent 55%, rgba(255,255,255,.025));
+      pointer-events: none;
+    }
+    .hero-inner {
+      max-width: 1180px; margin: 0 auto;
+      padding: clamp(42px, 7vw, 78px) 24px clamp(48px, 7vw, 82px);
+    }
+    .eyebrow { color: var(--site-secondary); font-size: 12px; letter-spacing: 3px; font-weight: 700; }
+    h1 {
+      font-family: var(--site-font-heading);
+      font-size: clamp(34px, 5vw, calc(54px * var(--site-heading-scale)));
+      line-height: 1.2; margin: 14px 0 16px; letter-spacing: 1px;
+    }
+    .hero-copy { max-width: 620px; color: #d5cdbf; font-size: 15px; margin: 0; }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 27px; }
+    .hero-tag { border: 1px solid rgba(181,138,69,.45); color: #e4d4b8; padding: 5px 12px; border-radius: 99px; font-size: 12px; }
+    main { max-width: 1180px; margin: 0 auto; padding: 34px 24px 72px; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 25px; }
+    .section-title { margin: 0; font-size: calc(22px * var(--site-heading-scale)); color: var(--text); }
+    .section-sub { color: var(--muted); font-size: 12px; margin-top: 3px; }
+    .search-wrap { width: min(360px, 100%); position: relative; }
+    .search-wrap span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+    .search-input {
+      width: 100%; padding: 12px 14px 12px 40px; border: 1px solid var(--line);
+      background: var(--surface); color: var(--text); border-radius: calc(12px * var(--site-radius-scale)); outline: none;
+    }
+    .search-input:focus { border-color: var(--site-secondary); box-shadow: 0 0 0 3px rgba(181,138,69,.13); }
+    .layout { display: grid; grid-template-columns: 220px minmax(0,1fr); gap: 24px; align-items: start; }
+    .sidebar, .content-panel { background: var(--surface); border: 1px solid var(--line); border-radius: calc(16px * var(--site-radius-scale)); box-shadow: var(--shadow); }
+    .sidebar { padding: 16px; position: sticky; top: 18px; }
+    .side-label { color: var(--muted); font-size: 11px; letter-spacing: 2px; padding: 5px 10px 12px; }
+    .category-btn {
+      display: flex; align-items: center; justify-content: space-between; width: 100%;
+      border: 0; background: transparent; color: var(--text); text-align: left;
+      padding: 10px 11px; margin: 2px 0; border-radius: calc(9px * var(--site-radius-scale)); font-size: 13px;
+    }
+    .category-btn:hover { background: var(--surface-soft); }
+    .category-btn.active { background: var(--site-primary); color: var(--site-on-primary); }
+    .category-count { opacity: .65; font-size: 11px; }
+    .content-panel { padding: 22px; min-height: 390px; }
+    .content-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .content-head h2 { font-size: 17px; margin: 0; }
+    .result-count { color: var(--muted); font-size: 12px; }
+    .article-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+    .article-card {
+      border: 1px solid var(--line); background: var(--surface); border-radius: calc(13px * var(--site-radius-scale));
+      padding: 18px; text-align: left; color: var(--text); transition: .18s ease; min-height: 174px;
+      display: flex; flex-direction: column; align-items: flex-start;
+    }
+    .article-card:hover { border-color: var(--site-secondary); transform: translateY(-2px); box-shadow: 0 8px 22px rgba(30,24,14,.07); }
+    .article-category { color: #9a7134; background: rgba(181,138,69,.12); padding: 4px 9px; border-radius: 99px; font-size: 11px; }
+    .article-card h3 { margin: 13px 0 7px; font-size: 16px; line-height: 1.45; }
+    .article-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .card-bottom { margin-top: auto; padding-top: 15px; color: var(--muted); font-size: 11px; }
+    .empty { text-align: center; color: var(--muted); padding: 60px 15px; grid-column: 1 / -1; }
+    .reader { display: none; }
+    .reader.open { display: block; }
+    .list-view.hidden { display: none; }
+    .back-btn, .copy-btn {
+      border: 1px solid var(--line); background: var(--surface); color: var(--text);
+      padding: 8px 13px; border-radius: calc(9px * var(--site-radius-scale)); font-size: 12px;
+    }
+    .back-btn:hover, .copy-btn:hover { border-color: var(--site-secondary); }
+    .reader-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+    .reader h2 { font-size: clamp(22px, 3vw, 30px); line-height: 1.4; margin: 15px 0 8px; }
+    .reader-meta { color: var(--muted); font-size: 12px; }
+    .reader-body { margin-top: 26px; font-size: 15px; line-height: 2; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .reader-body p { margin: 0 0 16px; }
+    .notice { background: var(--surface-soft); border-left: 3px solid var(--site-secondary); padding: 13px 15px; margin-top: 26px; color: var(--muted); font-size: 12px; }
+    .footer { background: var(--site-primary); color: #cfc5b5; padding: 25px 24px; text-align: center; font-size: 11px; }
+    .footer strong { color: var(--site-secondary); font-weight: 600; }
+    @media (max-width: 760px) {
+      .topbar-inner { padding: 14px 18px; }
+      .top-note { display: none; }
+      .hero-inner { padding-left: 20px; padding-right: 20px; }
+      main { padding: 25px 16px 52px; }
+      .toolbar { align-items: stretch; flex-direction: column; }
+      .search-wrap { width: 100%; }
+      .layout { grid-template-columns: 1fr; gap: 14px; }
+      .sidebar { position: static; padding: 12px; }
+      .side-label { padding-bottom: 7px; }
+      #categoryList { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+      .category-btn { width: auto; flex: 0 0 auto; white-space: nowrap; padding: 8px 11px; }
+      .category-count { margin-left: 7px; }
+      .content-panel { padding: 16px; }
+      .article-grid { grid-template-columns: 1fr; }
+      .article-card { min-height: 145px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="brand-mark">DF</div>
+          <div>
+            <div class="brand-name">顶峰学习小课堂</div>
+            <div class="brand-sub">DINGFENG LEARNING</div>
+          </div>
+        </div>
+        <div class="top-note">认真了解 · 独立判断 · 理性参与</div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="eyebrow">LEARN · UNDERSTAND · SHARE</div>
+        <h1>把复杂的事情，<br>一点一点弄明白。</h1>
+        <p class="hero-copy">这里整理项目学习资料、常见问题和交流经验。先了解事实，再作判断；不夸大、不保证，用清楚易懂的方式学习和交流。</p>
+        <div class="hero-tags">
+          <span class="hero-tag">学习资料</span>
+          <span class="hero-tag">常见问题</span>
+          <span class="hero-tag">沟通分享</span>
+          <span class="hero-tag">心得记录</span>
+        </div>
+      </div>
+    </section>
+
+    <main>
+      <div class="toolbar">
+        <div>
+          <h2 class="section-title">学习内容</h2>
+          <div class="section-sub">按分类查找，也可以直接搜索关键词</div>
+        </div>
+        <label class="search-wrap">
+          <span>⌕</span>
+          <input id="searchInput" class="search-input" type="search" placeholder="搜索文章标题或内容…" aria-label="搜索文章">
+        </label>
+      </div>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="side-label">内容分类</div>
+          <nav id="categoryList" aria-label="文章分类"></nav>
+        </aside>
+        <section class="content-panel">
+          <div id="listView" class="list-view">
+            <div class="content-head">
+              <h2 id="currentCategory">全部内容</h2>
+              <span id="resultCount" class="result-count"></span>
+            </div>
+            <div id="articleGrid" class="article-grid"></div>
+          </div>
+          <article id="reader" class="reader">
+            <div class="reader-top">
+              <button id="backBtn" class="back-btn" type="button">← 返回文章列表</button>
+              <button id="copyBtn" class="copy-btn" type="button">复制全文</button>
+            </div>
+            <span id="readerCategory" class="article-category"></span>
+            <h2 id="readerTitle"></h2>
+            <div id="readerMeta" class="reader-meta"></div>
+            <div id="readerBody" class="reader-body"></div>
+            <div class="notice">学习提醒：涉及公司资质、监管许可、产品机制、资金安排或收益数据的内容，请以可核验的官方文件和最新规则为准。本文不构成投资建议，也不代表收益承诺。</div>
+          </article>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer"><strong>顶峰学习小课堂</strong> · 用事实学习，用理性判断 · 本站资料仅供学习交流</footer>
+  </div>
+
+  <script>
+    /*
+      ==================== 文章维护区 ====================
+      以后新增、修改或删除文章，只需要编辑下面的 articles 数组。
+      每篇文章包含：id（不能重复）、title（标题）、category（分类）、summary（简介）、date（日期）、content（正文）。
+      新增文章时复制一组 { ... }，修改文字后保存并重新发布 GitHub Pages。
+      分类名称会根据文章的 category 自动生成。
+      ==================================================
+    */
+    const articles = [
+      {
+        id: 1,
+        title: "怎样使用顶峰学习小课堂",
+        category: "使用指南",
+        summary: "先熟悉分类、搜索和文章阅读功能，快速找到需要的资料。",
+        date: "使用说明",
+        content: `欢迎来到顶峰学习小课堂。\n\n你可以从左侧（手机上方）的分类进入不同内容，也可以在搜索框输入关键词查找文章。\n\n点击文章卡片即可阅读全文。阅读页面右上方有“复制全文”按钮，可以复制文字用于个人学习或整理。\n\n本站内容会逐步补充。遇到资料有更新时，请以最新、可核验的文件为准。`
+      },
+      {
+        id: 2,
+        title: "了解一个项目，先看哪些资料？",
+        category: "项目学习",
+        summary: "不要只听别人介绍，先从主体、业务、许可范围和公开记录入手。",
+        date: "学习要点",
+        content: `了解一个项目，第一步不是急着判断好不好，而是先弄清楚它到底是谁在运营、做什么业务。\n\n可以按这几个方向查资料：\n\n一、运营主体。核对公司完整名称、注册地、注册编号、股权关系，以及这些信息是否能在官方渠道查到。\n\n二、业务范围。公司注册成立，不等于它可以经营所有金融业务。要分清公司注册信息、实际经营内容和监管许可是不同概念。\n\n三、许可与监管。核对许可主体、牌照编号、获准业务类型、适用地区和限制条件。不要把某一家关联公司的牌照直接说成整个项目或所有参与者都获得许可。\n\n四、资金与产品机制。弄清资金由谁保管、如何使用、风险由谁承担、退出条件是什么，以及相关条款是否有正式文件支持。\n\n五、持续核实。公司资料、监管规则和产品条款可能变化，介绍时应标明资料日期，并保留官方查询来源。\n\n能查到资料是一回事，资料是否足以证明某项业务合规、资金安全或收益可靠，是另一回事。两者不要混为一谈。`
+      },
+      {
+        id: 3,
+        title: "朋友问：这个项目靠谱吗？怎么回答？",
+        category: "常见问题",
+        summary: "不急着反驳，也不要替项目作保证；把能核实的事实和未知的部分说清楚。",
+        date: "沟通参考",
+        content: `朋友问项目靠不靠谱，不需要急着说“肯定靠谱”，更不要用情绪压过对方的疑问。\n\n可以这样回答：\n\n“你有顾虑很正常，换成我也会先了解清楚。我可以把目前能查到的公司资料、业务说明和相关条款发给你，你自己核对。至于资金风险、收益能不能持续、退出是否顺畅，这些都不能只听我说，还是要看真实文件和实际规则。你觉得哪里不清楚，我们就一项一项查。”\n\n沟通时要注意：\n\n1. 不承诺本金绝对安全。\n2. 不承诺固定收益或保证回本。\n3. 不把公司注册、股权关系直接等同于产品获批。\n4. 不回避风险、费用、锁定期和退出条件。\n5. 对暂时无法核实的问题，明确说还需要查证。\n\n真正有帮助的介绍，不是把所有疑问都说成没问题，而是让对方有条件作出自己的判断。`
+      },
+      {
+        id: 4,
+        title: "分享资料时，哪些话不要随便说？",
+        category: "沟通分享",
+        summary: "避免绝对化、保证式和未经证实的说法，让交流更真实也更负责任。",
+        date: "沟通提醒",
+        content: `介绍项目时，有些话听起来很有信心，但如果没有充分证据，反而容易误导别人。\n\n尽量不要说：\n\n“绝对安全”“稳赚不赔”“保证每天有收益”“公司有牌照所以所有业务都合法”“随时都能提现吗”“肯定不会出问题”。\n\n更合适的表达是：\n\n“这是目前资料里写明的内容，我们可以一起核对。”\n\n“我了解的是这个业务范围，但具体是否适用于这项产品，还要看许可条件和正式文件。”\n\n“收益存在不确定性，历史表现不代表未来结果，参与前要看清风险和退出规则。”\n\n“我现在还没有查到可靠依据的部分，不会先替它下结论。”\n\n表达真实，不是把话说得保守就够了，而是要把事实、个人理解和暂时未知的部分区分开。`
+      },
+      {
+        id: 5,
+        title: "写一份真实的个人学习心得",
+        category: "心得记录",
+        summary: "每个人的经历不同，心得要写自己的变化，不必套用别人的故事。",
+        date: "写作参考",
+        content: `一份让人愿意看下去的心得，不需要每个人都写成同一种成功故事。\n\n可以从几个真实的问题开始：\n\n一、当初为什么开始了解？是想补充知识、寻找新机会，还是朋友介绍后想先弄明白？\n\n二、刚接触时哪里不懂？把真实的疑问写出来，比直接说自己一开始就很认可更可信。\n\n三、后来做了哪些学习？例如查阅公开资料、了解规则、和不同的人交流，或者重新整理自己的时间安排。\n\n四、现在有什么变化？可以是表达更清楚、做决定更谨慎、学会核对资料，也可以是发现某些事情仍然需要继续观察。\n\n五、下一步准备怎么做？写具体、适合自己的计划，不必每个人都设定相同的目标或等级。\n\n不要为了让文章好看而编造收益、经历或家庭故事。真实的细节，比统一的口号更有说服力。`
+      },
+      {
+        id: 6,
+        title: "数字资产相关内容的风险检查清单",
+        category: "风险与规则",
+        summary: "参与前先看资金去向、托管安排、费用、退出机制和最坏情况下的损失。",
+        date: "风险提示",
+        content: `涉及数字资产、质押、借贷或流动性服务时，不能只看宣传中的收益数字。建议至少核对以下事项：\n\n□ 资金实际存放在哪里，由谁控制私钥或账户权限？\n□ 是否使用智能合约？合约地址、审计报告和升级权限能否核实？\n□ 收益来自什么业务活动？是否存在市场波动、借贷违约或流动性风险？\n□ 是否存在平台费用、网络费用、管理费用或提前退出成本？\n□ 是否有锁定期、赎回排队、暂停提现或其他限制？\n□ 发生合约漏洞、平台经营问题或极端行情时，损失如何承担？\n□ 相关服务是否在参与者所在地依法提供？\n□ 宣传资料是否把预期收益说成确定收益？\n\n任何一项说不清，都应该先暂停并进一步核实。不要借钱、不要动用生活必需资金，也不要因为熟人推荐就跳过独立判断。`
+      }
+    ];
+
+    const categories = ["全部内容", ...new Set(articles.map(article => article.category))];
+    let activeCategory = "全部内容";
+    let currentArticle = null;
+
+    const categoryList = document.getElementById("categoryList");
+    const articleGrid = document.getElementById("articleGrid");
+    const currentCategory = document.getElementById("currentCategory");
+    const resultCount = document.getElementById("resultCount");
+    const searchInput = document.getElementById("searchInput");
+    const listView = document.getElementById("listView");
+    const reader = document.getElementById("reader");
+
+    function renderCategories() {
+      categoryList.innerHTML = "";
+      categories.forEach(category => {
+        const count = category === "全部内容" ? articles.length : articles.filter(item => item.category === category).length;
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `category-btn${activeCategory === category ? " active" : ""}`;
+        button.innerHTML = `<span>${category}</span><span class="category-count">${count}</span>`;
+        button.addEventListener("click", () => {
+          activeCategory = category;
+          closeReader();
+          renderCategories();
+          renderArticles();
+        });
+        categoryList.appendChild(button);
+      });
+    }
+
+    function getFilteredArticles() {
+      const keyword = searchInput.value.trim().toLowerCase();
+      return articles.filter(article => {
+        const categoryMatch = activeCategory === "全部内容" || article.category === activeCategory;
+        const textMatch = !keyword || `${article.title} ${article.summary} ${article.content} ${article.category}`.toLowerCase().includes(keyword);
+        return categoryMatch && textMatch;
+      });
+    }
+
+    function renderArticles() {
+      const filtered = getFilteredArticles();
+      currentCategory.textContent = activeCategory;
+      resultCount.textContent = `${filtered.length} 篇内容`;
+      articleGrid.innerHTML = "";
+      if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "没有找到相关内容，试试其他关键词。";
+        articleGrid.appendChild(empty);
+        return;
+      }
+      filtered.forEach(article => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "article-card";
+        const category = document.createElement("span");
+        category.className = "article-category";
+        category.textContent = article.category;
+        const title = document.createElement("h3");
+        title.textContent = article.title;
+        const summary = document.createElement("p");
+        summary.textContent = article.summary;
+        const meta = document.createElement("div");
+        meta.className = "card-bottom";
+        meta.textContent = article.date || "学习资料";
+        card.append(category, title, summary, meta);
+        card.addEventListener("click", () => openArticle(article.id));
+        articleGrid.appendChild(card);
+      });
+    }
+
+    function openArticle(id) {
+      const article = articles.find(item => item.id === id);
+      if (!article) return;
+      currentArticle = article;
+      document.getElementById("readerCategory").textContent = article.category;
+      document.getElementById("readerTitle").textContent = article.title;
+      document.getElementById("readerMeta").textContent = article.date || "学习资料";
+      document.getElementById("readerBody").textContent = article.content;
+      listView.classList.add("hidden");
+      reader.classList.add("open");
+      window.scrollTo({ top: document.querySelector(".content-panel").getBoundingClientRect().top + window.scrollY - 20, behavior: "smooth" });
+    }
+
+    function closeReader() {
+      reader.classList.remove("open");
+      listView.classList.remove("hidden");
+      currentArticle = null;
+    }
+
+    document.getElementById("backBtn").addEventListener("click", closeReader);
+    document.getElementById("copyBtn").addEventListener("click", async () => {
+      if (!currentArticle) return;
+      const textToCopy = `${currentArticle.title}\n\n${currentArticle.content}`;
+      try {
+        await navigator.clipboard.writeText(textToCopy);
+        document.getElementById("copyBtn").textContent = "已复制";
+        setTimeout(() => { document.getElementById("copyBtn").textContent = "复制全文"; }, 1500);
+      } catch (error) {
+        const temporary = document.createElement("textarea");
+        temporary.value = textToCopy;
+        document.body.appendChild(temporary);
+        temporary.select();
+        document.execCommand("copy");
+        temporary.remove();
+        document.getElementById("copyBtn").textContent = "已复制";
+        setTimeout(() => { document.getElementById("copyBtn").textContent = "复制全文"; }, 1500);
+      }
+    });
+
+    searchInput.addEventListener("input", () => {
+      closeReader();
+      renderArticles();
+    });
+
+    renderCategories();
+    renderArticles();
+  </script>
+</body>
+</html>
